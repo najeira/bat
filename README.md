@@ -31,7 +31,7 @@ Inspired by [Httpie](https://github.com/jakubroztocil/httpie). Thanks to the aut
 
 ## Installation
 
-	go get -u github.com/astaxie/bat
+	go get -u github.com/najeira/bat
 	
 make sure the `$GOPATH/bin` is added into `$PATH`
 
@@ -67,7 +67,7 @@ See the request that is being sent using one of the output options:
 
 Use Github API to post a comment on an issue with authentication:
 
-	$ bat -a USERNAME POST https://api.github.com/repos/astaxie/bat/issues/1/comments body='bat is awesome!'
+	$ bat -a USERNAME POST https://api.github.com/repos/najeira/bat/issues/1/comments body='bat is awesome!'
 
 Upload a file using redirected input:
 
@@ -290,3 +290,12 @@ In your ~/.bash_profile:
 	export HTTP_PROXY=http://10.10.1.10:3128
 	export HTTPS_PROXY=https://10.10.1.10:1080
 	export NO_PROXY=localhost,example.com
+
+# License
+
+MIT License.
+
+- original [astaxie/bat](https://github.com/astaxie/bat)
+  is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+- json colorize is derived from [nwidger/jsoncolor](github.com/nwidger/jsoncolor)
+  is under the [MIT License](https://opensource.org/licenses/mit-license.php).
