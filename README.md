@@ -3,10 +3,9 @@ Go implemented CLI cURL-like tool for humans. Bat can be used for testing, debug
 
 Inspired by [Httpie](https://github.com/jakubroztocil/httpie). Thanks to the author, Jakub.
 
-
-![](images/logo.png)
-
 ![](images/example.png)
+
+** This is fork of [astaxie/bat](https://github.com/astaxie/bat). **
 
 - [Main Features](#main-features)
 - [Installation](#installation)
