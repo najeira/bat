@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"regexp"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/nwidger/jsoncolor"
 )
 
 const (
@@ -60,6 +64,36 @@ func ColorfulResponse(str, contenttype string) string {
 		str = ColorfulHTML(str)
 	}
 	return str
+}
+
+func ColorfulJson(str string) string {
+	formatter := jsoncolor.NewFormatter()
+	formatter.SpaceColor = color.New()
+	formatter.CommaColor = color.New()
+	formatter.ColonColor = color.New()
+	formatter.ObjectColor = color.New()
+	formatter.ArrayColor = color.New()
+	formatter.FieldQuoteColor = color.New()
+	formatter.FieldColor = color.New(color.FgHiMagenta)
+	formatter.StringQuoteColor = color.New()
+	formatter.StringColor = color.New(color.FgHiCyan)
+	formatter.TrueColor = color.New(color.FgHiCyan)
+	formatter.FalseColor = color.New(color.FgHiCyan)
+	formatter.NumberColor = color.New(color.FgHiCyan)
+	formatter.NullColor = color.New(color.FgHiCyan)
+	if !pretty {
+		formatter.Prefix = ""
+		formatter.Indent = ""
+	} else {
+		formatter.Prefix = ""
+		formatter.Indent = "  "
+	}
+
+	buf := bytes.NewBuffer(make([]byte, 0, len(str)))
+	if err := formatter.Format(buf, []byte(str)); err != nil {
+		return str
+	}
+	return buf.String()
 }
 
 func ColorfulHTML(str string) string {

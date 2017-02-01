@@ -296,5 +296,6 @@ MIT License.
 
 - original [astaxie/bat](https://github.com/astaxie/bat)
   is under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-- json colorize is derived from [nwidger/jsoncolor](github.com/nwidger/jsoncolor)
-  is under the [MIT License](https://opensource.org/licenses/mit-license.php).
+- json colorize with [fatih/color](https://github.com/fatih/color)
+  and [nwidger/jsoncolor](github.com/nwidger/jsoncolor)
+  are under the [MIT License](https://opensource.org/licenses/mit-license.php).
