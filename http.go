@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -105,25 +102,11 @@ func getHTTP(method string, url string, args []string) (r *httplib.BeegoHttpRequ
 	return
 }
 
-func formatResponseBody(res *http.Response, httpreq *httplib.BeegoHttpRequest, pretty bool) string {
-	body, err := httpreq.Bytes()
-	if err != nil {
+func printResponseBody(res *http.Response, httpreq *httplib.BeegoHttpRequest, pretty bool) {
+	if body, err := httpreq.Bytes(); err != nil {
 		log.Fatalln("can't get the url", err)
+	} else {
+		contentType := res.Header.Get("Content-Type")
+		ColorfulResponse(string(body), contentType, pretty)
 	}
-	fmt.Println("")
-	match, err := regexp.MatchString(contentJsonRegex, res.Header.Get("Content-Type"))
-	if err != nil {
-		log.Fatalln("failed to compile regex", err)
-	}
-	if pretty && match {
-		var output bytes.Buffer
-		err := json.Indent(&output, body, "", "  ")
-		if err != nil {
-			log.Fatal("Response Json Indent: ", err)
-		}
-
-		return output.String()
-	}
-
-	return string(body)
 }

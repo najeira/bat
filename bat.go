@@ -239,24 +239,20 @@ func main() {
 		if err != nil {
 			log.Fatal("can't create file", err)
 		}
-		if runtime.GOOS != "windows" {
-			fmt.Println(Color(res.Proto, Magenta), Color(res.Status, Green))
-			for k, v := range res.Header {
-				fmt.Println(Color(k, Gray), ":", Color(strings.Join(v, " "), Cyan))
-			}
-		} else {
-			fmt.Println(res.Proto, res.Status)
-			for k, v := range res.Header {
-				fmt.Println(k, ":", strings.Join(v, " "))
-			}
+
+		colorMagenta.Print(res.Proto, " ")
+		colorGreen.Println(res.Status)
+		for k, v := range res.Header {
+			colorWhite.Print(k, ": ")
+			colorCyan.Println(strings.Join(v, " "))
 		}
-		fmt.Println("")
+
 		contentLength := res.Header.Get("Content-Length")
 		var total int64
 		if contentLength != "" {
 			total, _ = strconv.ParseInt(contentLength, 10, 64)
 		}
-		fmt.Printf("Downloading to \"%s\"\n", fl)
+		colorWhite.Printf("Downloading to \"%s\"\n", fl)
 		pb := NewProgressBar(total)
 		pb.Start()
 		multiWriter := io.MultiWriter(fd, pb)
@@ -270,78 +266,32 @@ func main() {
 		return
 	}
 
-	if runtime.GOOS != "windows" {
-		fi, err := os.Stdout.Stat()
-		if err != nil {
-			panic(err)
+	var dumpHeader, dumpBody []byte
+	dump := httpreq.DumpRequest()
+	dps := strings.Split(string(dump), "\n")
+	for i, line := range dps {
+		if len(strings.Trim(line, "\r\n ")) == 0 {
+			dumpHeader = []byte(strings.Join(dps[:i], "\n"))
+			dumpBody = []byte(strings.Join(dps[i:], "\n"))
+			break
 		}
-		if fi.Mode()&os.ModeDevice == os.ModeDevice {
-			var dumpHeader, dumpBody []byte
-			dump := httpreq.DumpRequest()
-			dps := strings.Split(string(dump), "\n")
-			for i, line := range dps {
-				if len(strings.Trim(line, "\r\n ")) == 0 {
-					dumpHeader = []byte(strings.Join(dps[:i], "\n"))
-					dumpBody = []byte(strings.Join(dps[i:], "\n"))
-					break
-				}
-			}
-			if printOption&printReqHeader == printReqHeader {
-				fmt.Println(ColorfulRequest(string(dumpHeader)))
-				fmt.Println("")
-			}
-			if printOption&printReqBody == printReqBody {
-				fmt.Println(string(dumpBody))
-				fmt.Println("")
-			}
-			if printOption&printRespHeader == printRespHeader {
-				fmt.Println(Color(res.Proto, Magenta), Color(res.Status, Green))
-				for k, v := range res.Header {
-					fmt.Println(Color(k, Gray), ":", Color(strings.Join(v, " "), Cyan))
-				}
-				fmt.Println("")
-			}
-			if printOption&printRespBody == printRespBody {
-				body := formatResponseBody(res, httpreq, pretty)
-				fmt.Println(ColorfulResponse(body, res.Header.Get("Content-Type")))
-			}
-		} else {
-			body := formatResponseBody(res, httpreq, pretty)
-			_, err = os.Stdout.WriteString(body)
-			if err != nil {
-				log.Fatal(err)
-			}
+	}
+	if printOption&printReqHeader == printReqHeader {
+		ColorfulRequest(string(dumpHeader))
+	}
+	if printOption&printReqBody == printReqBody {
+		colorWhite.Println(string(dumpBody))
+	}
+	if printOption&printRespHeader == printRespHeader {
+		colorMagenta.Print(res.Proto, " ")
+		colorGreen.Println(res.Status)
+		for k, v := range res.Header {
+			colorWhite.Print(k, ": ")
+			colorCyan.Println(strings.Join(v, " "))
 		}
-	} else {
-		var dumpHeader, dumpBody []byte
-		dump := httpreq.DumpRequest()
-		dps := strings.Split(string(dump), "\n")
-		for i, line := range dps {
-			if len(strings.Trim(line, "\r\n ")) == 0 {
-				dumpHeader = []byte(strings.Join(dps[:i], "\n"))
-				dumpBody = []byte(strings.Join(dps[i:], "\n"))
-				break
-			}
-		}
-		if printOption&printReqHeader == printReqHeader {
-			fmt.Println(string(dumpHeader))
-			fmt.Println("")
-		}
-		if printOption&printReqBody == printReqBody {
-			fmt.Println(string(dumpBody))
-			fmt.Println("")
-		}
-		if printOption&printRespHeader == printRespHeader {
-			fmt.Println(res.Proto, res.Status)
-			for k, v := range res.Header {
-				fmt.Println(k, ":", strings.Join(v, " "))
-			}
-			fmt.Println("")
-		}
-		if printOption&printRespBody == printRespBody {
-			body := formatResponseBody(res, httpreq, pretty)
-			fmt.Println(body)
-		}
+	}
+	if printOption&printRespBody == printRespBody {
+		printResponseBody(res, httpreq, pretty)
 	}
 }
 

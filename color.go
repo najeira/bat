@@ -11,76 +11,59 @@ import (
 	"github.com/nwidger/jsoncolor"
 )
 
-const (
-	Gray = uint8(iota + 90)
-	Red
-	Green
-	Yellow
-	Blue
-	Magenta
-	Cyan
-	White
-
-	EndColor = "\033[0m"
+var (
+	colorWhite   *color.Color = color.New(color.FgWhite)
+	colorMagenta *color.Color = color.New(color.FgMagenta)
+	colorCyan    *color.Color = color.New(color.FgCyan)
+	colorGreen   *color.Color = color.New(color.FgGreen)
 )
 
-func Color(str string, color uint8) string {
-	return fmt.Sprintf("%s%s%s", ColorStart(color), str, EndColor)
-}
-
-func ColorStart(color uint8) string {
-	return fmt.Sprintf("\033[%dm", color)
-}
-
-func ColorfulRequest(str string) string {
+func ColorfulRequest(str string) {
 	lines := strings.Split(str, "\n")
 	if printOption&printReqHeader == printReqHeader {
 		strs := strings.Split(lines[0], " ")
-		strs[0] = Color(strs[0], Magenta)
-		strs[1] = Color(strs[1], Cyan)
-		strs[2] = Color(strs[2], Magenta)
-		lines[0] = strings.Join(strs, " ")
+		colorMagenta.Print(strs[0], " ")
+		colorCyan.Print(strs[1], " ")
+		colorMagenta.Println(strs[2])
 	}
-	for i, line := range lines[1:] {
-		substr := strings.Split(line, ":")
+	for _, line := range lines[1:] {
+		substr := strings.SplitN(line, ":", 2)
 		if len(substr) < 2 {
-			continue
+			colorWhite.Println(line)
+		} else {
+			colorWhite.Print(substr[0] + ":")
+			colorCyan.Println(substr[1])
 		}
-		substr[0] = Color(substr[0], Gray)
-		substr[1] = Color(strings.Join(substr[1:], ":"), Cyan)
-		lines[i+1] = strings.Join(substr[:2], ":")
 	}
-	return strings.Join(lines, "\n")
 }
 
-func ColorfulResponse(str, contenttype string) string {
+func ColorfulResponse(str, contenttype string, pretty bool) {
 	match, err := regexp.MatchString(contentJsonRegex, contenttype)
 	if err != nil {
 		log.Fatalln("failed to compile regex", err)
 	}
 	if match {
-		str = ColorfulJson(str)
+		ColorfulJson(str, pretty)
 	} else {
-		str = ColorfulHTML(str)
+		ColorfulHTML(str)
 	}
-	return str
 }
 
-func ColorfulJson(str string) string {
+func ColorfulJson(str string, pretty bool) {
 	formatter := jsoncolor.NewFormatter()
-	formatter.SpaceColor = color.New()
-	formatter.CommaColor = color.New()
-	formatter.ColonColor = color.New()
-	formatter.ObjectColor = color.New()
-	formatter.ArrayColor = color.New()
-	formatter.FieldQuoteColor = color.New()
-	formatter.FieldColor = color.New(color.FgHiMagenta)
-	formatter.StringQuoteColor = color.New()
-	formatter.StringColor = color.New(color.FgHiCyan)
-	formatter.TrueColor = color.New(color.FgHiCyan)
-	formatter.FalseColor = color.New(color.FgHiCyan)
-	formatter.NumberColor = color.New(color.FgHiCyan)
-	formatter.NullColor = color.New(color.FgHiCyan)
+	formatter.SpaceColor = colorWhite
+	formatter.CommaColor = colorWhite
+	formatter.ColonColor = colorWhite
+	formatter.ObjectColor = colorWhite
+	formatter.ArrayColor = colorWhite
+	formatter.FieldQuoteColor = colorWhite
+	formatter.FieldColor = colorCyan
+	formatter.StringQuoteColor = colorWhite
+	formatter.StringColor = colorCyan
+	formatter.TrueColor = colorMagenta
+	formatter.FalseColor = colorMagenta
+	formatter.NumberColor = colorMagenta
+	formatter.NullColor = color.New(color.FgYellow)
 	if !pretty {
 		formatter.Prefix = ""
 		formatter.Indent = ""
@@ -91,11 +74,11 @@ func ColorfulJson(str string) string {
 
 	buf := bytes.NewBuffer(make([]byte, 0, len(str)))
 	if err := formatter.Format(buf, []byte(str)); err != nil {
-		return str
+		log.Fatalln(err)
 	}
-	return buf.String()
+	fmt.Println(buf.String())
 }
 
-func ColorfulHTML(str string) string {
-	return Color(str, Green)
+func ColorfulHTML(str string) {
+	colorGreen.Println(str)
 }
