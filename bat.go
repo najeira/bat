@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	version              = "0.1.0"
+	version              = "0.1.1"
 	printReqHeader uint8 = 1 << (iota - 1)
 	printReqBody
 	printRespHeader
@@ -278,9 +278,13 @@ func main() {
 	}
 	if printOption&printReqHeader == printReqHeader {
 		ColorfulRequest(string(dumpHeader))
+		fmt.Println("")
 	}
 	if printOption&printReqBody == printReqBody {
-		colorWhite.Println(string(dumpBody))
+		if len(dumpBody) > 0 {
+			colorWhite.Println(string(dumpBody))
+			fmt.Println("")
+		}
 	}
 	if printOption&printRespHeader == printRespHeader {
 		colorMagenta.Print(res.Proto, " ")
@@ -289,6 +293,7 @@ func main() {
 			colorWhite.Print(k, ": ")
 			colorCyan.Println(strings.Join(v, " "))
 		}
+		fmt.Println("")
 	}
 	if printOption&printRespBody == printRespBody {
 		printResponseBody(res, httpreq, pretty)

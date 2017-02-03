@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -108,5 +109,8 @@ func printResponseBody(res *http.Response, httpreq *httplib.BeegoHTTPRequest, pr
 	} else {
 		contentType := res.Header.Get("Content-Type")
 		ColorfulResponse(string(body), contentType, pretty)
+		if len(body) > 0 {
+			fmt.Println("")
+		}
 	}
 }

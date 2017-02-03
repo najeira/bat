@@ -16,6 +16,9 @@ var (
 	colorMagenta *color.Color = color.New(color.FgMagenta)
 	colorCyan    *color.Color = color.New(color.FgCyan)
 	colorGreen   *color.Color = color.New(color.FgGreen)
+	colorYellow  *color.Color = color.New(color.FgYellow)
+	colorRed     *color.Color = color.New(color.FgRed)
+	colorBlue    *color.Color = color.New(color.FgBlue)
 )
 
 func ColorfulRequest(str string) {
@@ -57,13 +60,13 @@ func ColorfulJson(str string, pretty bool) {
 	formatter.ObjectColor = colorWhite
 	formatter.ArrayColor = colorWhite
 	formatter.FieldQuoteColor = colorWhite
-	formatter.FieldColor = colorCyan
+	formatter.FieldColor = colorBlue
 	formatter.StringQuoteColor = colorWhite
 	formatter.StringColor = colorCyan
-	formatter.TrueColor = colorMagenta
-	formatter.FalseColor = colorMagenta
-	formatter.NumberColor = colorMagenta
-	formatter.NullColor = color.New(color.FgYellow)
+	formatter.TrueColor = colorYellow
+	formatter.FalseColor = colorYellow
+	formatter.NumberColor = colorGreen
+	formatter.NullColor = colorRed
 	if !pretty {
 		formatter.Prefix = ""
 		formatter.Indent = ""
