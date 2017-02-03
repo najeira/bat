@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/astaxie/bat/httplib"
+	"github.com/astaxie/beego/httplib"
 )
 
 type result struct {
@@ -18,7 +18,7 @@ type result struct {
 	contentLength int64
 }
 
-func RunBench(b *httplib.BeegoHttpRequest) {
+func RunBench(b *httplib.BeegoHTTPRequest) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	start := time.Now()
 	results := make(chan *result, benchN)
@@ -41,12 +41,12 @@ func RunBench(b *httplib.BeegoHttpRequest) {
 	close(results)
 }
 
-func worker(wg *sync.WaitGroup, ch chan int, results chan *result, b *httplib.BeegoHttpRequest) {
+func worker(wg *sync.WaitGroup, ch chan int, results chan *result, b *httplib.BeegoHTTPRequest) {
 	for _ = range ch {
 		s := time.Now()
 		code := 0
 		size := int64(0)
-		resp, err := b.SendOut()
+		resp, err := b.DoRequest()
 		if err == nil {
 			size = resp.ContentLength
 			code = resp.StatusCode

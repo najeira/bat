@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/astaxie/bat/httplib"
+	"github.com/astaxie/beego/httplib"
 )
 
-var defaultSetting = httplib.BeegoHttpSettings{
+var defaultSetting = httplib.BeegoHTTPSettings{
 	ShowDebug:        true,
 	UserAgent:        "bat/" + version,
 	ConnectTimeout:   60 * time.Second,
@@ -21,7 +21,7 @@ var defaultSetting = httplib.BeegoHttpSettings{
 	DumpBody:         true,
 }
 
-func getHTTP(method string, url string, args []string) (r *httplib.BeegoHttpRequest) {
+func getHTTP(method string, url string, args []string) (r *httplib.BeegoHTTPRequest) {
 	r = httplib.NewBeegoRequest(url, method)
 	r.Setting(defaultSetting)
 	r.Header("Accept-Encoding", "gzip, deflate")
@@ -97,12 +97,12 @@ func getHTTP(method string, url string, args []string) (r *httplib.BeegoHttpRequ
 		}
 	}
 	if !form && len(jsonmap) > 0 {
-		r.JsonBody(jsonmap)
+		r.JSONBody(jsonmap)
 	}
 	return
 }
 
-func printResponseBody(res *http.Response, httpreq *httplib.BeegoHttpRequest, pretty bool) {
+func printResponseBody(res *http.Response, httpreq *httplib.BeegoHTTPRequest, pretty bool) {
 	if body, err := httpreq.Bytes(); err != nil {
 		log.Fatalln("can't get the url", err)
 	} else {

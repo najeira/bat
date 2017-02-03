@@ -200,7 +200,7 @@ func main() {
 		if err != nil {
 			httpreq.Body(stdin)
 		} else {
-			httpreq.JsonBody(j)
+			httpreq.JSONBody(j)
 		}
 	}
 
